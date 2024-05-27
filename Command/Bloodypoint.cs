@@ -18,7 +18,7 @@ using VampireCommandFramework;
 namespace BloodyPoints.Command
 {
 
-    [CommandGroup(name: "bloodypoint", shortHand: "bp")]
+    [CommandGroup(name: "bloodypoint", shortHand: "bls")]
     internal class Bloodypoint
     {
         public static int WaypointLimit = 3;
@@ -42,14 +42,14 @@ namespace BloodyPoints.Command
             }
         }*/
 
-        [Command(name: "teleport", shortHand: "tp", adminOnly: false, usage: "<Name>", description: "Teleports you to the specific waypoint.")]
+        [Command(name: "teleport", shortHand: "tp", adminOnly: false, usage: ".使用傳點", description: "將您傳送到特定路徑點.")]
         public static void WaypoinCommand(ChatCommandContext ctx, string name)
         {
             var PlayerEntity = ctx.Event.SenderCharacterEntity;
             var SteamID = ctx.Event.User.PlatformId;
             if (Helper.IsPlayerInCombat(PlayerEntity))
             {
-                throw ctx.Error("Unable to use waypoint! You're in combat!");
+                throw ctx.Error("你還在戰鬥中,無法使用傳點!");
             }
 
             var wp = Database.globalWaypoint.FirstOrDefault(waypoint => waypoint.Name == name);
@@ -60,7 +60,7 @@ namespace BloodyPoints.Command
                 {
                     if (Helper.checkDracualaRoom(wp))
                     {
-                        throw ctx.Error($"You can't teleport to Dracula's room!");
+                        throw ctx.Error($"你不能把傳送至古拉爵的家阿!");
                     }
                 }
                 Helper.TeleportTo(ctx.Event.SenderUserEntity, PlayerEntity, wp.getLocation());
@@ -75,14 +75,14 @@ namespace BloodyPoints.Command
                 {
                     if (Helper.checkDracualaRoom(wp))
                     {
-                        throw ctx.Error($"You can't teleport to Dracula's room!");
+                        throw ctx.Error($"你不能把傳送至古拉爵的家阿!");
                     }
                 }
                 Helper.TeleportTo(ctx.Event.SenderUserEntity, PlayerEntity, wp.getLocation());
                 return;
             }
 
-            throw ctx.Error($"Cant find Teleport name {name}!");
+            throw ctx.Error($"找不到為 {name} 的傳點!");
         }
 
         [Command(name: "teleportplayer", shortHand: "tpp", adminOnly: true, usage: "<Name> <PlayerName>", description: "Teleports player to the specific waypoint. If we type \"all\" instead of the player's name it will teleport all online players to the specified point.")]
@@ -193,7 +193,7 @@ namespace BloodyPoints.Command
             
         }
 
-        [Command(name: "waypoint", shortHand: "wp", adminOnly: false, usage: "<Name>", description: "Creates the specified personal waypoint")]
+        [Command(name: "waypoint", shortHand: "wp", adminOnly: false, usage: ".創建傳點", description: "已創建個人專屬的傳送點")]
         public static void WaypointSetCommand(ChatCommandContext ctx, string name)
         {
 
@@ -203,14 +203,14 @@ namespace BloodyPoints.Command
 
             if (BuffUtility.TryGetBuff(Core.SystemsCore.EntityManager, userModel.Character.Entity, Prefabs.AB_Shapeshift_Bat_TakeFlight_Buff, out Entity buffEntity))
             {
-                throw ctx.Error($"You cannot create a waypoint while flying");
+                throw ctx.Error($"飛行時無法創建傳點");
             }
 
             if (Database.waypoints_owned.TryGetValue(SteamID, out var total) && !ctx.Event.User.IsAdmin && total >= WaypointLimit)
             {
                 if (total >= WaypointLimit)
                 {
-                    throw ctx.Error("You already have reached your total waypoint limit.");
+                    throw ctx.Error("你已經超出可以設置的傳點數量.");
                 }
             }
 
@@ -225,7 +225,7 @@ namespace BloodyPoints.Command
 
             if (item != null)
             {
-                throw ctx.Error($"You already have a waypoint with the same name.");
+                throw ctx.Error($"你已經創建相同名稱的傳點.");
             }
 
             float3 location = entityManager.GetComponentData<LocalToWorld>(ctx.Event.SenderCharacterEntity).Position;
@@ -234,13 +234,13 @@ namespace BloodyPoints.Command
                 WaypointData testLocation = new WaypointData("test", 123456789123456789, location.x, location.y, location.z);
                 if (Helper.checkDracualaRoom(testLocation))
                 {
-                    throw ctx.Error($"You can't create a waypoint in Dracula's room!");
+                    throw ctx.Error($"你不能把傳點設置在古拉爵的家阿!");
                 }
             }
             
             var f2_location = new float3(location.x, location.y, location.z);
             AddWaypoint(SteamID, f2_location, name, false);
-            ctx.Reply("Successfully added Waypoint.");
+            ctx.Reply("已創建個人專屬的傳送點.");
         }
 
         [Command(name: "waypointglobal", shortHand: "wpg", adminOnly: true, usage: "<Name>", description: "Creates the specified global waypoint")]
@@ -305,7 +305,7 @@ namespace BloodyPoints.Command
             
         }
 
-        [Command(name: "waypointremove", shortHand: "wpr", adminOnly: false, usage: "<Name>", description: "Removes the specified personal waypoint")]
+        [Command(name: "waypointremove", shortHand: "wpr", adminOnly: false, usage: ".刪除傳點", description: "Removes the specified personal waypoint")]
         public static void WaypointRemoveCommand(ChatCommandContext ctx, string name)
         {
             ulong SteamID = ctx.Event.User.PlatformId;
@@ -315,7 +315,7 @@ namespace BloodyPoints.Command
             if (item != null)
             {
                 RemoveWaypoint(SteamID, name, item, false);
-                ctx.Reply("Successfully removed Waypoint.");
+                ctx.Reply("你已成功刪除傳點.");
                 return;
             }
 
@@ -336,7 +336,7 @@ namespace BloodyPoints.Command
                 ctx.Reply($" - <color=#ffff00>{wp.Name}</color>");
                 total_wp++;
             }
-            if (total_wp == 0) throw ctx.Error("No waypoint available.");
+            if (total_wp == 0) throw ctx.Error("沒有可用的傳點.");
         }
 
         public static void AddWaypoint(ulong owner, float3 location, string name, bool isGlobal)
