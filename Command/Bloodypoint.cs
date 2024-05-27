@@ -262,7 +262,7 @@ namespace BloodyPoints.Command
 
             if (item != null)
             {
-                throw ctx.Error($"A global waypoint with the \"{name}\" name existed. Please rename your waypoint.");
+                throw ctx.Error($"你沒有這個 \"{name}\" 名字的傳點,請確認你的傳點名稱.");
             }
 
             item = Database.waypoints.FirstOrDefault(waypoint => waypoint.Name == name);
@@ -305,7 +305,7 @@ namespace BloodyPoints.Command
             
         }
 
-        [Command(name: "waypointremove", shortHand: "wpr", adminOnly: false, usage: ".刪除傳點", description: "Removes the specified personal waypoint")]
+        [Command(name: "waypointremove", shortHand: "rm", adminOnly: false, usage: ".刪除傳點", description: "Removes the specified personal waypoint")]
         public static void WaypointRemoveCommand(ChatCommandContext ctx, string name)
         {
             ulong SteamID = ctx.Event.User.PlatformId;
@@ -322,7 +322,7 @@ namespace BloodyPoints.Command
             throw ctx.Error($"A global waypoint with the \"{name}\" name existed. Please rename your waypoint.");
         }
 
-        [Command(name: "list", shortHand: "l", adminOnly: false, usage: "", description: "Lists waypoints available to you")]
+        [Command(name: "list", shortHand: "ls", adminOnly: false, usage: "查看傳點", description: "Lists waypoints available to you")]
         public static void WaypointCommand(ChatCommandContext ctx)
         {
             int total_wp = 0;
